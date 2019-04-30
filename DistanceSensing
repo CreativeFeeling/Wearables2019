@@ -1,0 +1,47 @@
+const int anPin = 0;
+float anVolt, mm, inches, feet, measurement1, measurement2;
+
+void setup() {
+Serial.begin(9600);
+pinMode(13, OUTPUT);
+//pinMode(14, OUTPUT); Pin used when Qdunio board was functional
+read_sensor();
+measurement1 = mm;
+}
+
+void read_sensor(){
+anVolt = analogRead(anPin);
+mm = anVolt * 5;
+inches = mm/25.4;
+feet = inches/12;
+}
+
+void print_range(){ // For debugging 
+Serial.print("S1");
+Serial.print("=");
+Serial.print(anVolt);
+Serial.print(" ");
+Serial.print(mm);
+Serial.print(" ");
+Serial.print(feet);
+Serial.print(" ");
+Serial.println(inches);
+}
+
+void loop() {  // Loop every 1/4th second to grab distance readings
+read_sensor();
+measurement2 = mm;
+delay(250); 
+
+if (measurement1 - measurement2 > 500){ // compare sequential 
+   Serial.println("Coming closer"); // for debugging
+   digitalWrite(13, HIGH); // turn off buzzers
+   //digitalWrite(14, HIGH); Pin used when Qdunio board was functional
+   delay(1000); // Buzzers will buzz for a second
+   digitalWrite(13, LOW); // turn off buzzers
+   //digitalWrite(14, LOW); Pin used when Qdunio board was functional
+   delay(3000); // Wait three seconds between signals as to not overload user with feedback
+}
+measurement1 = measurement2;
+print_range();
+}
